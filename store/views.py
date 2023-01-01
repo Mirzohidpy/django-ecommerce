@@ -53,7 +53,7 @@ def product_detail(request, category_slug, product_slug):
         raise e
 
     context = {
-        'single_product': single_product,
+         'single_product': single_product,
         'in_cart': in_cart,
     }
     return render(request, 'store/product_detail.html', context=context)
