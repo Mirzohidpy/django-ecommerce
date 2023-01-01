@@ -1,3 +1,5 @@
+from django.contrib import messages, auth
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from members.forms import RegisterForm
@@ -25,9 +27,10 @@ def register(request):
                 username=username,
             )
             user.save()
-            return redirect('login')
+            messages.success(request, 'Account was created for ' + username)
+            return redirect('register')
     else:
-         form = RegisterForm()
+        form = RegisterForm()
     context = {
         'form': form
     }
@@ -35,8 +38,25 @@ def register(request):
 
 
 def login(request):
+    if request.method == 'POST':
+        email = request.POST['email']
+        password = request.POST['password']
+        # user = Member.objects.get(email=email)
+        user = auth.authenticate(email=email, password=password)
+        if user is not None:
+            auth.login(request, user)
+            return redirect('home')
+        else:
+            messages.error(request, 'Invalid credentials')
+            return redirect('login')
+        # if user:
+        #     if user.password == password:
+        #         return redirect('home')
     return render(request, 'members/login.html')
 
 
+@login_required(login_url='login')
 def logout(request):
-    return
+    auth.logout(request)
+    messages.success(request, 'You are now logged out')
+    return redirect('login')
