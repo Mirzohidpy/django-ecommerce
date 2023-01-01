@@ -43,10 +43,10 @@
                                 <div class="row">
                                     <div class="item-option-select">
                                         <h6>Select Size</h6>
-                                        <select name="size" class="form-control" required >
+                                        <select name="size" class="form-control" required>
                                             <option value="" disabled selected>Choose Size</option>
                                             {% for size in single_product.variation_set.sizes %}
-                                                <option value="{{ size.variation_value | lower }}">{{ size.variation_value | capfirst}}</option>
+                                                <option value="{{ size.variation_value | lower }}">{{ size.variation_value | capfirst }}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
@@ -56,8 +56,9 @@
                                     <h3 class="text-danger">Out of stock</h3>
                                 {% else %}
                                     {% if in_cart %}
-                                        <a href="#" class="btn  btn-success"> <span
-                                                class="text">Added to Cart</span> <i class="fas fa-check"></i> </a>
+                                        <button type="submit" class="btn  btn-primary"> <span
+                                            class="text">Add to Cart</span> <i class="fas fa-shopping-cart"></i>
+                                        </button>
                                         <a href="{% url 'cart' %}" class="btn  btn-outline-primary"> <span
                                                 class="text">View Cart</span> <i class="fas fa-eye"></i> </a>
                                     {% else %}
