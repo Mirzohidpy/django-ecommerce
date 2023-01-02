@@ -8,6 +8,8 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 
+from carts.models import Cart, CartItem
+from carts.views import _cart_id
 from members.forms import RegisterForm
 from members.models import Member
 
@@ -63,7 +65,19 @@ def login(request):
         password = request.POST['password']
         # user = Member.objects.get(email=email)
         user = auth.authenticate(email=email, password=password)
+
         if user is not None:
+            try:
+                cart = Cart.objects.get(cart_id=_cart_id(request))
+                is_cart_item_exists = CartItem.objects.filter(cart=cart).exists()
+                if is_cart_item_exists:
+                    cart_item = CartItem.objects.filter(cart=cart)
+                    # Getting the product variation by cart id
+                    for item in cart_item:
+                        item.user = user
+                        item.save()
+            except:
+                pass
             auth.login(request, user)
             messages.success(request, 'You are now logged in')
             return redirect('dashboard')
