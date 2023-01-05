@@ -157,9 +157,9 @@ GRAPH_MODELS = {
     'graph_models': True,
 }
 
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_USE_TLS = True
-# EMAIL_PORT = 587
-# EMAIL_HOST_USER = 'm.abdurazzoqov@newuzbekistanuniversity.uz'
-# EMAIL_HOST_PASSWORD = 'Usa@2026'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'nefritkibera@gmail.com'
+EMAIL_HOST_PASSWORD = 'vrtpejwookqnimug'

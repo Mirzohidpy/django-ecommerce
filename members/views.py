@@ -157,11 +157,14 @@ def activate(request, uidb64, token):
 def dashboard(request):
     orders = Order.objects.order_by('-created_at').filter(user_id=request.user.id, is_ordered=True)
     orders_count = orders.count()
+    try:
+        user_profile = UserProfile.objects.get(user_id=request.user.id)
+    except:
+        user_profile = None
 
-    userprofile = UserProfile.objects.get(user_id=request.user.id)
     context = {
         'orders_count': orders_count,
-        'userprofile': userprofile,
+        'userprofile': user_profile,
     }
     return render(request, 'members/dashboard.html', context)
 
@@ -239,24 +242,47 @@ def my_orders(request):
 
 @login_required(login_url='login')
 def edit_profile(request):
-    userprofile = get_object_or_404(UserProfile, user=request.user)
-    if request.method == 'POST':
-        user_form = UserForm(request.POST, instance=request.user)
-        profile_form = UserProfileForm(request.POST, request.FILES, instance=userprofile)
-        if user_form.is_valid() and profile_form.is_valid():
-            user_form.save()
-            profile_form.save()
-            messages.success(request, 'Your profile has been updated.')
-            return redirect('edit_profile')
-    else:
-        user_form = UserForm(instance=request.user)
-        profile_form = UserProfileForm(instance=userprofile)
-    context = {
-        'user_form': user_form,
-        'profile_form': profile_form,
-        'userprofile': userprofile,
-    }
-    return render(request, 'members/edit_profile.html', context)
+    try:
+        userprofile = UserProfile.objects.get(user=request.user)
+        if request.method == 'POST':
+            user_form = UserForm(request.POST, instance=request.user)
+            profile_form = UserProfileForm(request.POST, request.FILES, instance=userprofile)
+            if user_form.is_valid() and profile_form.is_valid():
+                user_form.save()
+                profile_form.save()
+                messages.success(request, 'Your profile has been updated.')
+                return redirect('edit_profile')
+        else:
+            user_form = UserForm(instance=request.user)
+            profile_form = UserProfileForm(instance=userprofile)
+        context = {'user_form': user_form, 'profile_form': profile_form, 'userprofile': userprofile}
+        return render(request, 'members/edit_profile.html', context)
+    except:
+        if request.method == 'POST':
+            form = UserProfileForm(request.POST)
+            if form.is_valid():
+                userprofile = UserProfile()
+                userprofile.user = request.user
+                userprofile.address_line_1 = form.cleaned_data['address_line_1']
+                userprofile.address_line_2 = form.cleaned_data['address_line_2']
+                userprofile.country = form.cleaned_data['country']
+                userprofile.state = form.cleaned_data['state']
+                userprofile.city = form.cleaned_data['city']
+                userprofile.save()
+                userprofile = UserProfile.objects.get(user=request.user)
+
+                user_form = UserForm(request.POST, instance=request.user)
+                profile_form = UserProfileForm(request.POST, request.FILES, instance=userprofile)
+                if user_form.is_valid() and profile_form.is_valid():
+                    user_form.save()
+                    profile_form.save()
+                    messages.success(request, 'Your profile has been updated.')
+                    return redirect('edit_profile')
+                else:
+                    user_form = UserForm(instance=request.user)
+                    profile_form = UserProfileForm(instance=userprofile)
+                context = {'user_form': user_form, 'profile_form': profile_form, 'userprofile': userprofile}
+        return render(request, 'members/edit_profile.html')
 
 
 @login_required(login_url='login')
